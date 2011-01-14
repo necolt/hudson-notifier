@@ -32,10 +32,17 @@ class HudsonServer(object):
 
 class HudsonBuildResult(object):
     def __init__(self, status):
-        i = status.rsplit(' ', 2)
+        i = status.split(' ', 2)
         self.name, self.build, self.status = (i[0], i[1], i[2])
         self.build = self.build.strip('#')
-        self.status = self.status.replace('(', '').replace(')','')
+        self.status = self.status.replace('(', '').replace(')','').split(' ')[0]
+        if self.status == 'stable' or self.status == 'back':
+            self.status = 'SUCCESS' 
+        elif self.status == 'aborted':
+            self.status = 'UNSTABLE' 
+        elif self.status == 'broken':
+            self.status = 'FAILURE' 
+
 
     def __eq__(self, obj):
         return self.name == obj.name and self.build == obj.build and self.status == obj.status

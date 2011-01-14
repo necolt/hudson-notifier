@@ -46,7 +46,7 @@ class HudsonNotifierTrayIcon:
     hbox.pack_start(self.projects[item.name].icon, False, False, 0)
     self.projects[item.name].menu.add(hbox)
     self.menu.prepend(self.projects[item.name].menu)
-    self.update_project(item, alertChange=False)
+    self.update_project(item, alertChange=True)
 
   def remove_projects(self):
     for key, value in self.projects.iteritems():

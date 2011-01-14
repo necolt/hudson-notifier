@@ -1,0 +1,4 @@
+project = hudson-notifier
+template = ubuntu-application
+version = 0.3.1
+lp_id = hudson-notifier

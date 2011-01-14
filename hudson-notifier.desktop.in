@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Hudson Notifier
+Comment=Hudson build server notifier application
+Categories=GNOME;Development;Building;Monitor;TrayIcon;
+Exec=hudson-notifier
+Icon=/usr/share/hudson-notifier/media/hudson-notifier.svg
+Terminal=false
+Type=Application

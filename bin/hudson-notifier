@@ -1,0 +1,87 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+### BEGIN LICENSE
+# Copyright (C) 2009 Philip Peitsch <philip.peitsch@gmail.com>
+#This program is free software: you can redistribute it and/or modify it 
+#under the terms of the GNU General Public License version 3, as published 
+#by the Free Software Foundation.
+#
+#This program is distributed in the hope that it will be useful, but 
+#WITHOUT ANY WARRANTY; without even the implied warranties of 
+#MERCHANTABILITY, SATISFACTORY QUALITY, or FITNESS FOR A PARTICULAR 
+#PURPOSE.  See the GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License along 
+#with this program.  If not, see <http://www.gnu.org/licenses/>.
+### END LICENSE
+
+import sys
+import os
+import gtk
+import gobject
+import time
+
+# Check if we are working in the source tree or from the installed
+# package and mangle the python path accordingly
+if os.path.dirname(sys.argv[0]) != ".":
+    if sys.argv[0][0] == "/":
+        fullPath = os.path.dirname(sys.argv[0])
+    else:
+        fullPath = os.getcwd() + "/" + os.path.dirname(sys.argv[0])
+else:
+    fullPath = os.getcwd()
+sys.path.insert(0, os.path.dirname(fullPath))
+
+from hudsonnotifier import HudsonNotifierTrayIcon
+from hudsonnotifier.hudsonnotifierconfig import getconfig, getdatapath
+from hudsonar import HudsonServer
+
+
+def pollFeed(statusIcon):
+    config = getconfig()
+    server = HudsonServer(config.url)
+    def updateConfig(config):
+        server.url = config.url
+        statusIcon.remove_projects()
+        for item in server.get_current_status():
+            statusIcon.add_project(item)
+        server.get_updates()
+    config.configurationChanged += updateConfig
+    
+    nextcheck = 0
+    feedCheckInterval = 10
+    all_ok = False
+    for item in server.get_current_status():
+        statusIcon.add_project(item)
+
+    while True:
+        current = time.time()
+        if current > nextcheck:
+            nextcheck = current + feedCheckInterval
+            deleted_items, new_items = server.get_updates()
+
+            for item in new_items:
+                statusIcon.update_project(item)
+            for item in deleted_items:
+                statusIcon.remove_project(item)
+        yield True
+
+if __name__ == "__main__":
+    #support for command line options
+    import logging, optparse
+    parser = optparse.OptionParser(version="%prog %ver")
+    parser.add_option("-v", "--verbose", action="store_true", dest="verbose", help="Show debug messages")
+    (options, args) = parser.parse_args()
+
+    #set the logging level to show debug messages
+    if options.verbose:
+        logging.basicConfig(level=logging.DEBUG)
+        logging.debug('logging enabled')
+
+    #run the application
+    statusIcon = HudsonNotifierTrayIcon.HudsonNotifierTrayIcon(getconfig());
+
+    # required for Timer operation. See http://bugs.python.org/issue6073
+    gtk.gdk.threads_init()
+    gobject.timeout_add(1000, pollFeed(statusIcon).next)
+    gtk.main()

@@ -1,0 +1,28 @@
+Source: hudson-notifier
+Section: python
+Priority: extra
+Build-Depends: cdbs (>= 0.4.43),
+ debhelper (>= 6),
+ python,
+ python-central (>= 0.6.11),
+ python-distutils-extra (>= 2.10)
+Maintainer: Philip Peitsch <philip.peitsch@gmail.com>
+Standards-Version: 3.8.2
+XS-Python-Version: current
+
+Package: hudson-notifier
+Architecture: all
+XB-Python-Version: ${python:Versions}
+Depends: ${misc:Depends},
+ ${python:Depends},
+ python-feedparser,
+ python-notify,
+ python-apport,
+ python-gobject,
+ python-desktopcouch-records,
+ python-gtk2
+Description: A simple build notification monitor for Hudson
+ This small utility uses a notification area icon and the inotify
+ interface to alert the user on a successful or failed build for a Hudson
+ Continuous Integration server (https://hudson.dev.java.net/).
+

@@ -60,7 +60,10 @@ class HudsonNotifierTrayIcon:
 
   def update_project(self, item, alertChange=True):
     if(self.projects.has_key(item.name)):
-        self.projects[item.name].icon.set_from_stock(self.__status_to_icon__(item.status), gtk.ICON_SIZE_MENU)
+        if self.projects[item.name].menu.get_active():
+            self.projects[item.name].icon.set_from_stock(self.__status_to_icon__(item.status), gtk.ICON_SIZE_MENU)
+        else:
+            self.projects[item.name].icon = gtk.Image() 
     else:
         self.add_project(item)
     self.projects[item.name].status = item.status

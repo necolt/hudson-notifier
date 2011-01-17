@@ -38,8 +38,9 @@ class HudsonBuildResult(object):
         self.status = self.status.replace('(', '').replace(')','').split(' ')[0]
         if self.status == 'stable' or self.status == 'back':
             self.status = 'SUCCESS' 
-        elif self.status == 'aborted':
-            self.status = 'UNSTABLE' 
+# Not sure what status should be 'UNSTABLE'...
+#        elif self.status == 'aborted':
+#            self.status = 'UNSTABLE' 
         elif self.status == 'broken':
             self.status = 'FAILURE' 
 
